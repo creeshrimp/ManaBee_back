@@ -13,9 +13,15 @@ import { dirname, join } from 'node:path'
 // import routerUser from './routers/user.js'
 
 import cors from 'cors'
-import './passport.js'
+// import './passport.js'
 
 const app = express()
+const server = createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+    },
+})
 
 // cors 全開
 app.use(cors())
@@ -32,7 +38,22 @@ app.use((error, req, res, next) => {
 // 路由
 // app.use('/user', routerUser)
 
-app.listen(process.env.PORT || 4000, async () => {
+// 📌 WebSocket
+io.on('connection', (socket) => {
+    console.log('新用戶連接:', socket.id)
+
+    // socket.on('sendMessage', (data) => {
+    //     console.log('收到訊息:', data)
+    //     io.emit('receiveMessage', data)
+    // })
+
+    socket.on('disconnect', () => {
+        console.log('用戶離開:', socket.id)
+    })
+})
+
+// 📌 啟動server 本來都是 app.listen websocket 掛在 server 上 所以用 server.listen
+server.listen(process.env.PORT || 4000, async () => {
     try {
         // server 啟動
         console.log('listening on port', process.env.PORT || 4000)
