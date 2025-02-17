@@ -42,10 +42,14 @@ app.use((error, req, res, next) => {
 io.on('connection', (socket) => {
     console.log('新用戶連接:', socket.id)
 
-    // socket.on('sendMessage', (data) => {
-    //     console.log('收到訊息:', data)
-    //     io.emit('receiveMessage', data)
-    // })
+    socket.on('sendMessage', (data) => {
+        console.log('收到訊息:', data)
+        // 給收到的訊息加上timestamp
+        data.timestamp = Date.now()
+        // 把timestamp轉成本地串
+        data.time = new Date(data.timestamp).toLocaleString()
+        io.emit('receiveMessage', data)
+    })
 
     socket.on('disconnect', () => {
         console.log('用戶離開:', socket.id)
