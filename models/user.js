@@ -1,10 +1,10 @@
 import { Schema, model, ObjectId, Error } from 'mongoose'
-import validator, { trim } from 'validator'
-// import bcrypt from 'bcrypt'
+import validator from 'validator'
+import bcrypt from 'bcrypt'
 
 // import UserRoles from '../enums/UserRoles.js'
 
-// User Schema
+// User
 const userSchema = new Schema(
     {
         username: {
@@ -54,7 +54,7 @@ const userSchema = new Schema(
     },
 )
 
-// 定義技能物件的結構
+// skill
 const skillSchema = new Schema({
     name: {
         type: String,
@@ -64,6 +64,15 @@ const skillSchema = new Schema({
         type: String,
         required: true,
     },
+})
+
+// mongoose pre save hook
+// 加密並儲存
+userSchema.pre('save', async function () {
+    const user = this
+    if (this.isModified('password')) {
+        user.password = await bcrypt.hash(this.password, 10)
+    }
 })
 
 export default model('User', userSchema)

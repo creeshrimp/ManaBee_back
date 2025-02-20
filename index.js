@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import mongoose from 'mongoose'
 import { StatusCodes } from 'http-status-codes'
 
 // 手動建立 http server
@@ -61,6 +62,11 @@ server.listen(process.env.PORT || 4000, async () => {
     try {
         // server 啟動
         console.log('listening on port', process.env.PORT || 4000)
+        // 連線資料庫
+        await mongoose.connect(process.env.DB_URL)
+        // mongoose 內建的消毒 防注入
+        mongoose.set('sanitizeFilter', true)
+        console.log('資料庫連線成功')
     } catch (error) {
         console.log(' connect error: ' + error)
     }
