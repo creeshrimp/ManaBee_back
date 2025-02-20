@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 // 路由
-// import routerUser from './routers/user.js'
+import routerUser from './routers/user.js'
 
 import cors from 'cors'
 // import './passport.js'
@@ -37,7 +37,7 @@ app.use((error, req, res, next) => {
 })
 
 // 路由
-// app.use('/user', routerUser)
+app.use('/user', routerUser)
 
 // 📌 WebSocket
 io.on('connection', (socket) => {

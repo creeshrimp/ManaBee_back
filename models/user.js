@@ -4,6 +4,18 @@ import bcrypt from 'bcrypt'
 
 // import UserRoles from '../enums/UserRoles.js'
 
+// skill
+const skillSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    descriptions: {
+        type: String,
+        required: true,
+    },
+})
+
 // User
 const userSchema = new Schema(
     {
@@ -53,18 +65,6 @@ const userSchema = new Schema(
         timestamps: true, // 自動加上 createdAt 和 updatedAt 欄位
     },
 )
-
-// skill
-const skillSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    descriptions: {
-        type: String,
-        required: true,
-    },
-})
 
 // mongoose pre save hook
 // 加密並儲存
