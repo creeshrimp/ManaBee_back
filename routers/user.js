@@ -5,5 +5,6 @@ import * as user from '../controllers/user.js'
 const router = Router()
 
 router.post('/', user.create)
+router.post('/login', user.login)
 
 export default router

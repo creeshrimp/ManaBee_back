@@ -1,5 +1,6 @@
 import User from '../models/user.js'
 import { StatusCodes } from 'http-status-codes'
+import jwt from 'jsonwebtoken'
 import validator from 'validator'
 
 export async function create(req, res) {
@@ -20,7 +21,7 @@ export async function create(req, res) {
                 if (error.code === 11000) {
                     res.status(StatusCodes.CONFLICT).json({
                         success: false,
-                        message: '帳號重複',
+                        message: '欄位重複',
                     })
                 } else {
                     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -47,4 +48,17 @@ export async function create(req, res) {
                 break
         }
     }
+}
+
+// 登入，派發 JWT token
+export async function login(req, res) {
+    try {
+        let user = req.user
+        // 簽發jwt token
+        const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, {
+            expiresIn: '7 days',
+        })
+        req.user.tokens.push(token)
+        await req.user.save()
+    } catch (error) {}
 }
