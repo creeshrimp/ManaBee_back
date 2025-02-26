@@ -53,12 +53,31 @@ export async function create(req, res) {
 // 登入，派發 JWT token
 export async function login(req, res) {
     try {
-        let user = req.user
+        // req.user 是從 middleware/auth.js 裡傳過來的
         // 簽發jwt token
         const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, {
             expiresIn: '7 days',
         })
+        // 存入tokens陣列
         req.user.tokens.push(token)
         await req.user.save()
-    } catch (error) {}
+
+        // 登入成功，回覆 token 與使用者資料
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: '',
+            result: {
+                token,
+                account: req.user.account,
+                role: req.user.role,
+                cart: req.user.cartQuantity,
+            },
+        })
+    } catch (error) {
+        console.log('controllers/user.js:', error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: 'serverError',
+        })
+    }
 }

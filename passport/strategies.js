@@ -1,4 +1,4 @@
-import passport from 'passport'
+import passport from '../passport/strategies.js'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 
@@ -54,15 +54,18 @@ const jwtStrategy = new JwtStrategy(
     async (req, payload, done) => {
         try {
             // 因為沒有提供原始的 jwt 所以用套件語法取得
-            const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req)
+            // const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req)
+            // 自行取得token
+            const token = req.get('Authorization').replace('Bearer ', '')
 
             // 手動檢查過期
             const expired = payload.exp * 1000 < new Date().getTime()
 
             // 請求路徑
             const url = req.baseUrl + req.path
+            // 只有 refresh 和 logout 允許過期的 jwt
             if (expired && url !== '/user/refresh' && url !== '/user/logout') {
-                throw new Error('TOKEN')
+                return done(null, false, { message: 'expired token and bad request url' })
             }
 
             // 用解碼的資料查詢有沒有使用者
@@ -72,7 +75,7 @@ const jwtStrategy = new JwtStrategy(
             }
             // 找到使用者後，檢查資料庫有沒有這個 jwt
             if (!user.tokens.includes(token)) {
-                return done(null, null, { message: 'userTokenInvalid' })
+                return done(null, false, { message: 'userTokenInvalid' })
             }
             // 完成驗證方式，將資料帶入下一步處理
             return done(null, { user, token })
@@ -84,7 +87,7 @@ const jwtStrategy = new JwtStrategy(
 )
 
 // 掛載定義好的驗證策略
-passport.use('login', loginStrategy)
+passport.use('localLogin', loginStrategy)
 passport.use('jwt', jwtStrategy)
 
 export default passport

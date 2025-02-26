@@ -7,14 +7,14 @@ import { StatusCodes } from 'http-status-codes'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
-
 // 路由
 import routerUser from './routers/user.js'
 
 import cors from 'cors'
-// import './passport.js'
+
+// use passport 驗證策略
+// import strategies from './passport/strategies.js'
+// strategies.useAll()
 
 const app = express()
 const server = createServer(app)
