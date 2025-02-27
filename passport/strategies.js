@@ -1,8 +1,8 @@
-import passport from '../passport/strategies.js'
+import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 
-import User from './models/user.js'
+import User from '../models/user.js'
 import bcrypt from 'bcrypt'
 
 // 定義驗證策略
@@ -12,13 +12,13 @@ const loginStrategy = new LocalStrategy(
     {
         // 設定分別要用 req(請求) 裡的哪個欄位當帳號，哪個欄位當密碼
         // 預設為 username 與 password
-        usernameField: 'account',
+        usernameField: 'username',
         passwordField: 'password',
     },
-    async (account, password, done) => {
+    async (username, password, done) => {
         try {
             // 查詢有沒有符合帳號的使用者
-            const user = await User.findOne({ account: account })
+            const user = await User.findOne({ username: username })
             // 找不到使用者
             if (!user) {
                 return done(null, false, { message: '找不到使用者' })
@@ -65,7 +65,7 @@ const jwtStrategy = new JwtStrategy(
             const url = req.baseUrl + req.path
             // 只有 refresh 和 logout 允許過期的 jwt
             if (expired && url !== '/user/refresh' && url !== '/user/logout') {
-                return done(null, false, { message: 'expired token and bad request url' })
+                return done(null, false, { message: 'userTokenExpired' })
             }
 
             // 用解碼的資料查詢有沒有使用者
@@ -85,7 +85,6 @@ const jwtStrategy = new JwtStrategy(
         }
     },
 )
-
 // 掛載定義好的驗證策略
 passport.use('localLogin', loginStrategy)
 passport.use('jwt', jwtStrategy)

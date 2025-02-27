@@ -1,8 +1,12 @@
 import User from '../models/user.js'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
-import validator from 'validator'
 
+/**
+ * 建立帳號
+ * @param {Object} req 欲建立的 user data
+ * @param {Object} res 建立結果
+ */
 export async function create(req, res) {
     try {
         const user = await User.create(req.body)
@@ -50,7 +54,10 @@ export async function create(req, res) {
     }
 }
 
-// 登入，派發 JWT token
+/**
+ * 用req傳來的user做登入(派發 JWT token)，並回傳token與使用者資料。更新資料庫的tokens陣列
+ * @returns  物件 - 包含token與使用者資料
+ */
 export async function login(req, res) {
     try {
         // req.user 是從 middleware/auth.js 裡傳過來的
@@ -60,7 +67,10 @@ export async function login(req, res) {
         })
         // 存入tokens陣列
         req.user.tokens.push(token)
-        await req.user.save()
+        // 更新 資料庫 user 的 tokens 陣列
+        await User.findByIdAndUpdate(req.user._id, { tokens: req.user.tokens })
+
+        // await req.user.save()
 
         // 登入成功，回覆 token 與使用者資料
         res.status(StatusCodes.OK).json({
@@ -68,9 +78,7 @@ export async function login(req, res) {
             message: '',
             result: {
                 token,
-                account: req.user.account,
-                role: req.user.role,
-                cart: req.user.cartQuantity,
+                username: req.user.username,
             },
         })
     } catch (error) {
