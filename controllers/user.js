@@ -79,6 +79,7 @@ export async function login(req, res) {
             result: {
                 token,
                 username: req.user.username,
+                gender: req.user.gender,
             },
         })
     } catch (error) {
@@ -88,4 +89,40 @@ export async function login(req, res) {
             message: 'serverError',
         })
     }
+}
+/**
+ * 登出，會自己抓header的token
+ * @returns
+ */
+export async function logout(req, res) {
+    try {
+        const idx = req.user.tokens.findIndex((token) => token === req.token)
+        req.user.tokens.splice(idx, 1)
+        // 更新 資料庫 user 的 tokens 陣列
+        await User.findByIdAndUpdate(req.user._id, { tokens: req.user.tokens })
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: '',
+        })
+    } catch (error) {
+        console.log('controllers/user.js:', error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: 'serverError',
+        })
+    }
+}
+
+/**
+ * 取得使用者資料
+ */
+export async function profile(req, res) {
+    res.status(StatusCodes.OK).json({
+        success: true,
+        message: '',
+        result: {
+            username: req.user.username,
+            gender: req.user.gender,
+        },
+    })
 }

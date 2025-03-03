@@ -34,25 +34,31 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: [true, '密碼不可為空'],
-            minlength: [8, '密碼最少為 8 個字'],
+            minlength: [4, '密碼最少為 4 個字'],
             maxlength: [20, '密碼最多為 20 個字'],
             validate: [
-                {
-                    validator: (value) =>
-                        validator.isStrongPassword(value, {
-                            minLength: 8,
-                            minLowercase: 1,
-                            minUppercase: 1,
-                            minNumbers: 1,
-                            minSymbols: 1,
-                        }),
-                    message: '密碼必須包含至少 1 個大寫字母、1 個小寫字母、1 個數字和 1 個特殊符號',
-                },
+                // [先不要驗證太複雜]
+                // {
+                //     validator: (value) =>
+                //         validator.isStrongPassword(value, {
+                //             minLength: 8,
+                //             minLowercase: 1,
+                //             minUppercase: 1,
+                //             minNumbers: 1,
+                //             minSymbols: 1,
+                //         }),
+                //     message: '密碼必須包含至少 1 個大寫字母、1 個小寫字母、1 個數字和 1 個特殊符號',
+                // },
                 {
                     validator: (value) => /^[\x20-\x7E]+$/.test(value),
                     message: '密碼只能包含英文字母、數字和特殊符號',
                 },
             ],
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female'],
+            required: [true, '性別不可為空'],
         },
         tokens: {
             type: [String],
