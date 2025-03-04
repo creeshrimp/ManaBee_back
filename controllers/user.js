@@ -79,6 +79,7 @@ export async function login(req, res) {
             result: {
                 token,
                 username: req.user.username,
+                userId: req.user._id,
                 gender: req.user.gender,
             },
         })
@@ -122,6 +123,7 @@ export async function profile(req, res) {
         message: '',
         result: {
             username: req.user.username,
+            userId: req.user._id,
             gender: req.user.gender,
         },
     })

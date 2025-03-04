@@ -43,15 +43,28 @@ app.use('/user', routerUser)
 io.on('connection', (socket) => {
     console.log('新用戶連接:', socket.id)
 
-    socket.on('sendMessage', (data) => {
-        console.log('收到訊息:', data)
-        // 給收到的訊息加上timestamp
-        data.timestamp = Date.now()
-        // 把timestamp轉成本地串
-        data.time = new Date(data.timestamp).toLocaleString()
-        io.emit('receiveMessage', data)
+    // joinRoom
+    socket.on('joinRoom', (room) => {
+        socket.join(room)
+        console.log(`User ${socket.id} joined room ${room}`)
     })
 
+    // sendMessage
+    socket.on('sendMessage', (data) => {
+        console.log('收到訊息:', data)
+
+        // 要符合套件格式
+        // date: 日期(不含時間)
+        data.date = new Date().toDateString()
+        // timestamp: 時間(不含日期)
+        data.timestamp = new Date().toString().substring(16, 21)
+
+        io.to(data.roomId).emit('receiveMessage', data)
+        console.log(`Message sent to room ${data.roomId}:`, data)
+        // io.emit('receiveMessage', data)
+    })
+
+    // disconnect
     socket.on('disconnect', () => {
         console.log('用戶離開:', socket.id)
     })
