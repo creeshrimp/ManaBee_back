@@ -125,6 +125,78 @@ export async function profile(req, res) {
             username: req.user.username,
             userId: req.user._id,
             gender: req.user.gender,
+            learningSkills: req.user.learningSkills,
+            teachingSkills: req.user.teachingSkills,
+            introduction: req.user.introduction,
         },
     })
+}
+
+export async function getAllProfiles(req, res) {
+    try {
+        // 從資料庫查詢所有使用者，只挑選必要的欄位
+        const users = await User.find(
+            {},
+            '_id username gender learningSkills teachingSkills introduction',
+        )
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: '',
+            result: users,
+        })
+    } catch (error) {
+        console.error('getAllProfiles error:', error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: '取得所有個人資料失敗',
+        })
+    }
+}
+
+export async function updateProfile(req, res) {
+    try {
+        const { username, learningSkills, teachingSkills, introduction } = req.body
+
+        // 輔助函式：將技能陣列中每個元素轉換成 { name, descriptions }
+        const normalizeSkills = (skills) => {
+            if (!Array.isArray(skills)) return []
+            return skills.map(
+                (skill) => (typeof skill === 'string' ? { name: skill, descriptions: '' } : skill), // 假設已經是物件的就直接使用
+            )
+        }
+
+        // 建立要更新的資料物件
+        const updateData = {}
+        if (username !== undefined) updateData.username = username
+        if (learningSkills !== undefined)
+            updateData.learningSkills = normalizeSkills(learningSkills)
+        if (teachingSkills !== undefined)
+            updateData.teachingSkills = normalizeSkills(teachingSkills)
+        if (introduction !== undefined) updateData.introduction = introduction
+
+        // 使用 findByIdAndUpdate 更新，並回傳新的文件
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, updateData, {
+            new: true,
+            runValidators: true,
+        })
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: '個人資料更新成功',
+            result: {
+                username: updatedUser.username,
+                userId: updatedUser._id,
+                gender: updatedUser.gender,
+                learningSkills: updatedUser.learningSkills,
+                teachingSkills: updatedUser.teachingSkills,
+                introduction: updatedUser.introduction,
+            },
+        })
+    } catch (error) {
+        console.log('updateProfile error:', error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: '更新失敗',
+        })
+    }
 }

@@ -1,8 +1,7 @@
-import { Schema, model, ObjectId, Error } from 'mongoose'
+// models/user.js
+import { Schema, model } from 'mongoose'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
-
-// import UserRoles from '../enums/UserRoles.js'
 
 // skill
 const skillSchema = new Schema({
@@ -12,11 +11,11 @@ const skillSchema = new Schema({
     },
     descriptions: {
         type: String,
-        required: true,
+        required: false,
     },
 })
 
-// User
+// User schema
 const userSchema = new Schema(
     {
         username: {
@@ -37,18 +36,6 @@ const userSchema = new Schema(
             minlength: [4, '密碼最少為 4 個字'],
             maxlength: [20, '密碼最多為 20 個字'],
             validate: [
-                // [先不要驗證太複雜]
-                // {
-                //     validator: (value) =>
-                //         validator.isStrongPassword(value, {
-                //             minLength: 8,
-                //             minLowercase: 1,
-                //             minUppercase: 1,
-                //             minNumbers: 1,
-                //             minSymbols: 1,
-                //         }),
-                //     message: '密碼必須包含至少 1 個大寫字母、1 個小寫字母、1 個數字和 1 個特殊符號',
-                // },
                 {
                     validator: (value) => /^[\x20-\x7E]+$/.test(value),
                     message: '密碼只能包含英文字母、數字和特殊符號',
@@ -64,16 +51,19 @@ const userSchema = new Schema(
             type: [String],
         },
         learningSkills: [skillSchema], // 想學的技能
-        teachingSkills: [skillSchema], // 可教的技能
+        teachingSkills: [skillSchema], // 想教的技能
+        introduction: {
+            type: String,
+            default: '',
+        },
     },
     {
-        versionKey: false, // 禁用 mongoose自動加上的 __v
+        versionKey: false, // 禁用 mongoose 自動加上的 __v
         timestamps: true, // 自動加上 createdAt 和 updatedAt 欄位
     },
 )
 
-// mongoose pre save hook
-// 加密並儲存
+// mongoose pre save hook: 加密並儲存
 userSchema.pre('save', async function () {
     const user = this
     if (this.isModified('password')) {
