@@ -44,8 +44,14 @@ const userSchema = new Schema(
         },
         gender: {
             type: String,
-            enum: ['male', 'female'],
+            enum: ['male', 'female', false],
             required: [true, '性別不可為空'],
+        },
+        nickname: {
+            type: String,
+            required: false,
+            trim: true,
+            maxlength: [20, '暱稱最多為 10 個字'],
         },
         tokens: {
             type: [String],

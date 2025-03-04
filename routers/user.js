@@ -7,7 +7,9 @@ const router = Router()
 router.post('/', user.create)
 router.post('/login', auth.localLogin, user.login)
 router.delete('/logout', auth.jwt, user.logout)
+
 router.get('/profile', auth.jwt, user.profile)
 router.put('/profile', auth.jwt, user.updateProfile)
+
 router.get('/profiles', user.getAllProfiles)
 export default router

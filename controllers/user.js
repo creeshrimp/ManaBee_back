@@ -123,6 +123,7 @@ export async function profile(req, res) {
         message: '',
         result: {
             username: req.user.username,
+            nickname: req.user.nickname,
             userId: req.user._id,
             gender: req.user.gender,
             learningSkills: req.user.learningSkills,
@@ -137,7 +138,7 @@ export async function getAllProfiles(req, res) {
         // 從資料庫查詢所有使用者，只挑選必要的欄位
         const users = await User.find(
             {},
-            '_id username gender learningSkills teachingSkills introduction',
+            '_id username nickname gender learningSkills teachingSkills introduction',
         )
         res.status(StatusCodes.OK).json({
             success: true,
