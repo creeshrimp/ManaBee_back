@@ -9,6 +9,7 @@ import { Server } from 'socket.io'
 
 // 路由
 import routerUser from './routers/user.js'
+import routerChatroom from './routers/chatroom.js'
 
 import cors from 'cors'
 
@@ -38,6 +39,7 @@ app.use((error, req, res, next) => {
 
 // 路由
 app.use('/user', routerUser)
+app.use('/chatroom', routerChatroom)
 
 // 📌 WebSocket
 io.on('connection', (socket) => {

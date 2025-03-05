@@ -156,7 +156,7 @@ export async function getAllProfiles(req, res) {
 
 export async function updateProfile(req, res) {
     try {
-        const { username, learningSkills, teachingSkills, introduction } = req.body
+        const { username, nickname, learningSkills, teachingSkills, introduction } = req.body
 
         // 輔助函式：將技能陣列中每個元素轉換成 { name, descriptions }
         const normalizeSkills = (skills) => {
@@ -169,6 +169,7 @@ export async function updateProfile(req, res) {
         // 建立要更新的資料物件
         const updateData = {}
         if (username !== undefined) updateData.username = username
+        if (nickname !== undefined) updateData.nickname = nickname
         if (learningSkills !== undefined)
             updateData.learningSkills = normalizeSkills(learningSkills)
         if (teachingSkills !== undefined)
@@ -186,6 +187,7 @@ export async function updateProfile(req, res) {
             message: '個人資料更新成功',
             result: {
                 username: updatedUser.username,
+                nickname: updatedUser.nickname,
                 userId: updatedUser._id,
                 gender: updatedUser.gender,
                 learningSkills: updatedUser.learningSkills,

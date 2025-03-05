@@ -1,5 +1,5 @@
 // models/user.js
-import { Schema, model } from 'mongoose'
+import { Schema, model, ObjectId } from 'mongoose'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
 
